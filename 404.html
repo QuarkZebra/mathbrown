@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Not found — mathbrown.com</title>
+<script>
+/* Forgive any capitalization: /MHF4U, /Mhf4u, /mhf4u/... all forward. */
+(function(){
+  var map={mhf4u:"https://quarkzebra.github.io/MHF4U/",
+           mcr3u:"https://quarkzebra.github.io/MCR3U/",
+           mth1w:"https://quarkzebra.github.io/MTH1W/"};
+  var seg=location.pathname.split("/").filter(Boolean)[0];
+  if(seg&&map[seg.toLowerCase()])location.replace(map[seg.toLowerCase()]);
+})();
+</script>
+<style>body{font-family:system-ui,sans-serif;display:grid;place-items:center;min-height:90vh}
+p{text-align:center;line-height:2}</style>
+</head>
+<body>
+<p>That page isn&rsquo;t here.<br><a href="/">mathbrown.com</a></p>
+</body>
+</html>

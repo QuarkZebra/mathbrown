@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mr. Brown — Course Websites</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2338127d'/%3E%3Ctext x='32' y='45' font-size='30' font-family='Georgia,serif' font-style='italic' font-weight='bold' fill='white' text-anchor='middle'%3Emb%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+/* ── palette (matches the course sites, light + dusk) ────── */
+:root{
+  --sans:'Outfit',system-ui,sans-serif;--mono:'IBM Plex Mono',monospace;
+  --bg:#f2eef9;--surface:#ffffff;
+  --ink:#150e26;--t2:#3f3557;--t3:#7d7194;
+  --sh:0 2px 10px rgba(21,14,38,.08),0 10px 34px rgba(21,14,38,.10);
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0d0916;--surface:#150f24;
+  --ink:#ddd6ec;--t2:#9d90bc;--t3:#655a86;
+  --sh:0 2px 10px rgba(0,0,0,.4),0 10px 34px rgba(0,0,0,.45);
+}}
+.card[data-c=mhf]{--ac:#38127d}.card[data-c=mcr]{--ac:#7c3aed}
+.card[data-c=t1w]{--ac:#0284c7}.card[data-c=spe]{--ac:#2f7d4f}
+@media (prefers-color-scheme:dark){
+  .card[data-c=mhf]{--ac:#7d51e6}.card[data-c=mcr]{--ac:#a78bfa}
+  .card[data-c=t1w]{--ac:#38bdf8}.card[data-c=spe]{--ac:#66c68f}
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);
+  overflow:hidden;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+
+/* ── masthead ────────────────────────────────────────────── */
+.masthead{position:fixed;top:9vh;left:0;right:0;text-align:center;z-index:1;pointer-events:none}
+.eyebrow{font-family:var(--mono);font-size:.66rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--t3);font-weight:600}
+h1{font-weight:800;font-size:clamp(1.9rem,5vw,3rem);letter-spacing:-.02em;margin:.2rem 0 .35rem}
+h1 em{font-family:Georgia,serif;font-weight:700}
+.tag{color:var(--t2);font-size:.95rem}
+
+/* ── cards ───────────────────────────────────────────────── */
+.card{position:absolute;left:0;top:0;width:248px;z-index:2;display:block;
+  text-decoration:none;color:inherit;pointer-events:none;will-change:transform;
+  -webkit-tap-highlight-color:transparent}
+.card .in{display:block;background:var(--surface);border-radius:14px;padding:.95rem 1.1rem .95rem 1.25rem;
+  border:1px solid color-mix(in srgb,var(--ac) 30%,transparent);
+  box-shadow:inset 4px 0 0 var(--ac),var(--sh);
+  transition:transform .15s,box-shadow .15s}
+.card .code{display:block;font-family:var(--mono);font-size:.64rem;font-weight:600;
+  letter-spacing:.14em;color:var(--ac)}
+.card .name{display:block;font-weight:700;font-size:1.12rem;line-height:1.25;margin:.15rem 0 .3rem}
+.card .sub{display:block;font-size:.74rem;color:var(--t3)}
+.card.live{pointer-events:auto;cursor:pointer}
+.card.live:hover .in,.card.live:focus-visible .in{transform:translateY(-3px);
+  box-shadow:inset 4px 0 0 var(--ac),0 0 0 3px color-mix(in srgb,var(--ac) 14%,transparent),var(--sh)}
+.card:focus-visible{outline:none}
+
+/* ── static fallback (reduced motion / no JS) ────────────── */
+body.static{overflow:auto}
+body.static .masthead{position:static;margin-top:9vh;pointer-events:auto}
+body.static #field{display:flex;flex-wrap:wrap;justify-content:center;gap:1.1rem;
+  padding:2rem 1.2rem 4rem;max-width:60rem;margin:0 auto}
+body.static .card{position:static;pointer-events:auto;transform:none!important}
+body.static .card.spe{pointer-events:none}
+@media (max-width:560px){.card{width:min(230px,74vw)}}
+</style>
+</head>
+<body class="static">
+<header class="masthead">
+  <div class="eyebrow">mathbrown&middot;com</div>
+  <h1>Course <em>Websites</em></h1>
+  <div class="tag">Click your course to continue.</div>
+</header>
+
+<main id="field">
+  <a class="card" data-c="mhf" href="https://quarkzebra.github.io/MHF4U/">
+    <span class="in"><span class="code">MHF4U</span>
+    <span class="name">Advanced Functions</span>
+    <span class="sub">Grade 12 &middot; University Preparation</span></span></a>
+  <a class="card" data-c="mcr" href="https://quarkzebra.github.io/MCR3U/">
+    <span class="in"><span class="code">MCR3U</span>
+    <span class="name">Functions</span>
+    <span class="sub">Grade 11 &middot; University Preparation</span></span></a>
+  <a class="card" data-c="t1w" href="https://quarkzebra.github.io/MTH1W/">
+    <span class="in"><span class="code">MTH1W</span>
+    <span class="name">Mathematics 9</span>
+    <span class="sub">Grade 9 &middot; De-streamed</span></span></a>
+  <div class="card spe" data-c="spe" aria-hidden="true">
+    <span class="in"><span class="code">SPE4O</span>
+    <span class="name">Secrets for a Peaceful Existence</span>
+    <span class="sub">Grade 12 &middot; Open</span></span></div>
+</main>
+
+<script>
+(function(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return; // static layout stays
+  document.body.classList.remove('static');
+
+  var DODGE_END=5000, SETTLE=6000;         // dodge for 5 s, fully calm by 6 s
+  var R=180, FLEE=5200, VFLEE=850;         // flee radius / accel / speed cap
+  var cards=[].slice.call(document.querySelectorAll('.card'));
+  var W=innerWidth,H=innerHeight,PAD=10;
+  var mouse={x:-1e4,y:-1e4,on:false}, touchTimer=null;
+
+  var boxes=cards.map(function(el){
+    var spe=el.classList.contains('spe');
+    return {el:el,spe:spe,w:248,h:120,x:0,y:0,vx:0,vy:0};
+  });
+
+  // scatter without overlaps (best effort), below the masthead —
+  // deferred to the first frame with a real viewport
+  function scatter(){
+    var topY=Math.min(H*.34,260);
+    boxes.forEach(function(b,i){
+      b.w=b.el.offsetWidth||248; b.h=b.el.offsetHeight||120;
+      for(var t=0;t<80;t++){
+        b.x=PAD+Math.random()*Math.max(40,W-b.w-2*PAD);
+        b.y=topY+Math.random()*Math.max(40,H-b.h-topY-PAD);
+        var ok=true;
+        for(var j=0;j<i;j++){var o=boxes[j];
+          if(b.x<o.x+o.w+16&&o.x<b.x+b.w+16&&b.y<o.y+o.h+16&&o.y<b.y+b.h+16){ok=false;break}}
+        if(ok)break;
+      }
+      var sp=260+Math.random()*180, a=Math.random()*Math.PI*2;
+      b.vx=Math.cos(a)*sp; b.vy=Math.sin(a)*sp;
+    });
+  }
+
+  function aim(e){mouse.x=e.clientX;mouse.y=e.clientY;mouse.on=true;
+    if(e.pointerType==='touch'){clearTimeout(touchTimer);
+      touchTimer=setTimeout(function(){mouse.on=false},400)}}
+  addEventListener('pointermove',aim,{passive:true});
+  addEventListener('pointerdown',aim,{passive:true});
+  document.documentElement.addEventListener('mouseleave',function(){mouse.on=false});
+
+  var t0=null,last=null,live=false,placed=false;
+  function frame(now){
+    W=innerWidth; H=innerHeight;
+    if(!placed){
+      if(W<320||H<240){requestAnimationFrame(frame);return}
+      scatter(); placed=true;
+    }
+    if(t0===null){t0=now;last=now}
+    var dt=Math.min((now-last)/1000,.032); last=now;
+    var el=now-t0;
+
+    if(!live&&el>=DODGE_END){live=true;
+      boxes.forEach(function(b){if(!b.spe)b.el.classList.add('live')})}
+
+    var u=Math.min(el/SETTLE,1), drag=.05+2.4*u*u*u;
+    var topB=Math.min(H*.30,250);
+
+    boxes.forEach(function(b){
+      var dodging=b.spe||el<DODGE_END, fled=false;
+
+      if(dodging&&mouse.on){
+        var cx=b.x+b.w/2, cy=b.y+b.h/2, dx=cx-mouse.x, dy=cy-mouse.y;
+        var d=Math.hypot(dx,dy)-Math.min(b.w,b.h)/2;
+        if(d<R){
+          if(Math.hypot(dx,dy)<8){var ra=Math.random()*Math.PI*2;dx=Math.cos(ra)*20;dy=Math.sin(ra)*20}
+          var k=Math.max(d,18), s=FLEE*Math.pow(1-Math.max(d,0)/R,2);
+          b.vx+=dx/k*s*dt; b.vy+=dy/k*s*dt; fled=true}
+      }
+      if(b.spe&&el>SETTLE){ // keep prowling, slowly
+        b.vx+=(Math.random()-.5)*160*dt; b.vy+=(Math.random()-.5)*160*dt;
+      }
+
+      // SPE escapes sharply but calms fast once it's safe
+      var dg=b.spe&&el>=SETTLE?(fled?.4:2.2):drag;
+      var f=Math.exp(-dg*dt); b.vx*=f; b.vy*=f;
+
+      var sp=Math.hypot(b.vx,b.vy), cap;
+      if(dodging&&mouse.on) cap=VFLEE;
+      else if(el<SETTLE) cap=460;
+      else cap=b.spe?70:14;
+      if(sp>cap){b.vx*=cap/sp;b.vy*=cap/sp}
+
+      b.x+=b.vx*dt; b.y+=b.vy*dt;
+      if(b.x<PAD){b.x=PAD;b.vx=Math.abs(b.vx)*.85}
+      if(b.x>W-b.w-PAD){b.x=W-b.w-PAD;b.vx=-Math.abs(b.vx)*.85}
+      if(b.y<topB){b.y=topB;b.vy=Math.abs(b.vy)*.85}
+      if(b.y>H-b.h-PAD){b.y=H-b.h-PAD;b.vy=-Math.abs(b.vy)*.85}
+    });
+
+    // keep cards from stacking
+    for(var i=0;i<boxes.length;i++)for(var j=i+1;j<boxes.length;j++){
+      var a=boxes[i],c=boxes[j],M=10;
+      var px=Math.min(a.x+a.w,c.x+c.w)+M-Math.max(a.x,c.x);
+      var py=Math.min(a.y+a.h,c.y+c.h)+M-Math.max(a.y,c.y);
+      if(px>0&&py>0){
+        // settled real cards are near-immovable; a fleeing SPE yields around them
+        var wa=(a.spe||!live)?1:.08, wc=(c.spe||!live)?1:.08, ws=wa+wc;
+        if(px<py){var s=(a.x<c.x?-1:1)*px;a.x+=s*wa/ws;c.x-=s*wc/ws;var m=(a.vx+c.vx)/2;a.vx=m+(a.vx-m)*-.3;c.vx=m+(c.vx-m)*-.3}
+        else{var s2=(a.y<c.y?-1:1)*py;a.y+=s2*wa/ws;c.y-=s2*wc/ws;var m2=(a.vy+c.vy)/2;a.vy=m2+(a.vy-m2)*-.3;c.vy=m2+(c.vy-m2)*-.3}
+      }
+    }
+
+    boxes.forEach(function(b){b.el.style.transform='translate3d('+b.x+'px,'+b.y+'px,0)'});
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  window.__mb={boxes:boxes,elapsed:function(){return t0===null?0:performance.now()-t0},isLive:function(){return live}};
+})();
+</script>
+</body>
+</html>
