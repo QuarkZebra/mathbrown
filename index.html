@@ -12,13 +12,13 @@
 /* ── palette (matches the course sites, light + dusk) ────── */
 :root{
   --sans:'Outfit',system-ui,sans-serif;--mono:'IBM Plex Mono',monospace;
-  --bg:#f2eef9;--surface:#ffffff;
-  --ink:#150e26;--t2:#3f3557;--t3:#7d7194;
-  --sh:0 2px 10px rgba(21,14,38,.08),0 10px 34px rgba(21,14,38,.10);
+  --bg:#e7effa;--surface:#ffffff;
+  --ink:#101a2e;--t2:#3a4a68;--t3:#75839f;
+  --sh:0 2px 10px rgba(16,26,46,.08),0 10px 34px rgba(16,26,46,.10);
 }
 @media (prefers-color-scheme:dark){:root{
-  --bg:#0d0916;--surface:#150f24;
-  --ink:#ddd6ec;--t2:#9d90bc;--t3:#655a86;
+  --bg:#0a1120;--surface:#111b30;
+  --ink:#d9e3f5;--t2:#97a8c8;--t3:#5c6d8f;
   --sh:0 2px 10px rgba(0,0,0,.4),0 10px 34px rgba(0,0,0,.45);
 }}
 .card[data-c=mhf]{--ac:#38127d}.card[data-c=mcr]{--ac:#7c3aed}
@@ -133,7 +133,22 @@ body.static .card.spe{pointer-events:none}
     if(e.pointerType==='touch'){clearTimeout(touchTimer);
       touchTimer=setTimeout(function(){mouse.on=false},400)}}
   addEventListener('pointermove',aim,{passive:true});
-  addEventListener('pointerdown',aim,{passive:true});
+  addEventListener('pointerdown',function(e){aim(e);
+    // a tap ON or NEAR a dodging card sends it off at full speed instantly
+    var el2=t0===null?0:performance.now()-t0;
+    boxes.forEach(function(b){
+      if(!(b.spe||el2<DODGE_END))return;
+      var dx=b.x+b.w/2-e.clientX, dy=b.y+b.h/2-e.clientY, d=Math.hypot(dx,dy);
+      if(d-Math.min(b.w,b.h)/2<(b.spe?260:R)){
+        if(d<8){var ra=Math.random()*Math.PI*2;dx=Math.cos(ra);dy=Math.sin(ra);d=1}
+        // blend the escape toward the viewport centre so it finds open space
+        var tx=innerWidth/2-b.x-b.w/2, ty=innerHeight/2-b.y-b.h/2, tl=Math.hypot(tx,ty)||1;
+        var ex=dx/d+tx/tl*.45, ey=dy/d+ty/tl*.45, elen=Math.hypot(ex,ey)||1;
+        var v=b.spe?1100:850;
+        b.vx=ex/elen*v; b.vy=ey/elen*v;
+      }
+    });
+  },{passive:true});
   document.documentElement.addEventListener('mouseleave',function(){mouse.on=false});
 
   var t0=null,last=null,live=false,placed=false;
@@ -156,33 +171,43 @@ body.static .card.spe{pointer-events:none}
     boxes.forEach(function(b){
       var dodging=b.spe||el<DODGE_END, fled=false;
 
+      var RR=b.spe?220:R;
+      var tcx=W/2-b.x-b.w/2, tcy=H/2-b.y-b.h/2, td=Math.hypot(tcx,tcy)||1;
       if(dodging&&mouse.on){
         var cx=b.x+b.w/2, cy=b.y+b.h/2, dx=cx-mouse.x, dy=cy-mouse.y;
         var d=Math.hypot(dx,dy)-Math.min(b.w,b.h)/2;
-        if(d<R){
+        if(d<RR){
           if(Math.hypot(dx,dy)<8){var ra=Math.random()*Math.PI*2;dx=Math.cos(ra)*20;dy=Math.sin(ra)*20}
-          var k=Math.max(d,18), s=FLEE*Math.pow(1-Math.max(d,0)/R,2);
-          b.vx+=dx/k*s*dt; b.vy+=dy/k*s*dt; fled=true}
+          var k=Math.max(d,18), s=FLEE*Math.pow(1-Math.max(d,0)/RR,2);
+          b.vx+=dx/k*s*dt; b.vy+=dy/k*s*dt; fled=true;
+          if(b.spe){b.vx+=tcx/td*s*.3*dt; b.vy+=tcy/td*s*.3*dt} // arc around walls
+        }
       }
-      if(b.spe&&el>SETTLE){ // keep prowling, slowly
-        b.vx+=(Math.random()-.5)*160*dt; b.vy+=(Math.random()-.5)*160*dt;
+      if(el>SETTLE){ // everyone keeps gliding on a slowly wandering heading
+        if(b.ang===undefined)b.ang=Math.random()*6.283;
+        b.ang+=(Math.random()-.5)*1.6*dt;
+        var wf=b.spe?70:6.5;
+        b.vx+=Math.cos(b.ang)*wf*dt; b.vy+=Math.sin(b.ang)*wf*dt;
+        if(b.spe){b.vx+=tcx/td*14*dt; b.vy+=tcy/td*14*dt} // don't sulk in corners
       }
 
-      // SPE escapes sharply but calms fast once it's safe
-      var dg=b.spe&&el>=SETTLE?(fled?.4:2.2):drag;
+      // post-settle: light drag so the glide survives; SPE calms fast after a flee
+      var dg=el>=SETTLE?(b.spe?(fled?.3:1.2):.5):drag;
       var f=Math.exp(-dg*dt); b.vx*=f; b.vy*=f;
 
       var sp=Math.hypot(b.vx,b.vy), cap;
-      if(dodging&&mouse.on) cap=VFLEE;
+      if(dodging&&mouse.on) cap=b.spe?1100:VFLEE;
       else if(el<SETTLE) cap=460;
-      else cap=b.spe?70:14;
+      else cap=b.spe?110:Math.max(16,sp*.96); // knocked cards glide, then calm
       if(sp>cap){b.vx*=cap/sp;b.vy*=cap/sp}
 
       b.x+=b.vx*dt; b.y+=b.vy*dt;
-      if(b.x<PAD){b.x=PAD;b.vx=Math.abs(b.vx)*.85}
-      if(b.x>W-b.w-PAD){b.x=W-b.w-PAD;b.vx=-Math.abs(b.vx)*.85}
-      if(b.y<topB){b.y=topB;b.vy=Math.abs(b.vy)*.85}
-      if(b.y>H-b.h-PAD){b.y=H-b.h-PAD;b.vy=-Math.abs(b.vy)*.85}
+      var hit=false;
+      if(b.x<PAD){b.x=PAD;b.vx=Math.abs(b.vx)*.85;hit=true}
+      if(b.x>W-b.w-PAD){b.x=W-b.w-PAD;b.vx=-Math.abs(b.vx)*.85;hit=true}
+      if(b.y<topB){b.y=topB;b.vy=Math.abs(b.vy)*.85;hit=true}
+      if(b.y>H-b.h-PAD){b.y=H-b.h-PAD;b.vy=-Math.abs(b.vy)*.85;hit=true}
+      if(hit)b.ang=Math.atan2(b.vy,b.vx); // glide heading follows the bounce
     });
 
     // keep cards from stacking
@@ -191,10 +216,10 @@ body.static .card.spe{pointer-events:none}
       var px=Math.min(a.x+a.w,c.x+c.w)+M-Math.max(a.x,c.x);
       var py=Math.min(a.y+a.h,c.y+c.h)+M-Math.max(a.y,c.y);
       if(px>0&&py>0){
-        // settled real cards are near-immovable; a fleeing SPE yields around them
-        var wa=(a.spe||!live)?1:.08, wc=(c.spe||!live)?1:.08, ws=wa+wc;
-        if(px<py){var s=(a.x<c.x?-1:1)*px;a.x+=s*wa/ws;c.x-=s*wc/ws;var m=(a.vx+c.vx)/2;a.vx=m+(a.vx-m)*-.3;c.vx=m+(c.vx-m)*-.3}
-        else{var s2=(a.y<c.y?-1:1)*py;a.y+=s2*wa/ws;c.y-=s2*wc/ws;var m2=(a.vy+c.vy)/2;a.vy=m2+(a.vy-m2)*-.3;c.vy=m2+(c.vy-m2)*-.3}
+        // SPE is heavy: it shoulders real cards out of its way, not vice versa
+        var ma=a.spe?4:1, mc=c.spe?4:1, ws=ma+mc;
+        if(px<py){var s=(a.x<c.x?-1:1)*px;a.x+=s*mc/ws;c.x-=s*ma/ws;var m=(a.vx+c.vx)/2;a.vx=m+(a.vx-m)*-.3;c.vx=m+(c.vx-m)*-.3}
+        else{var s2=(a.y<c.y?-1:1)*py;a.y+=s2*mc/ws;c.y-=s2*ma/ws;var m2=(a.vy+c.vy)/2;a.vy=m2+(a.vy-m2)*-.3;c.vy=m2+(c.vy-m2)*-.3}
       }
     }
 
