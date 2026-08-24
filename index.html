@@ -174,6 +174,18 @@ body.static .card.spe{pointer-events:none}
         var ex=dx/d+tx/tl*.45, ey=dy/d+ty/tl*.45, elen=Math.hypot(ex,ey)||1;
         var v=b.spe?2200:850;
         b.vx=ex/elen*v; b.vy=ey/elen*v;
+        if(e.pointerType==='touch'){
+          // no cursor warning on touch, so dash clear of the finger in one frame
+          var D=Math.hypot(b.w,b.h)*.9+70, W2=innerWidth, H2=innerHeight, tB=Math.min(H2*.30,250);
+          var nx=b.x+ex/elen*D, ny=b.y+ey/elen*D;
+          nx=Math.min(Math.max(nx,PAD),W2-b.w-PAD); ny=Math.min(Math.max(ny,tB),H2-b.h-PAD);
+          if(Math.hypot(nx+b.w/2-e.clientX,ny+b.h/2-e.clientY)<170){ // cornered: cut across the middle
+            var ml=Math.hypot(W2/2-b.w/2-b.x,H2/2-b.h/2-b.y)||1;
+            nx=b.x+(W2/2-b.w/2-b.x)/ml*D; ny=b.y+(H2/2-b.h/2-b.y)/ml*D;
+            nx=Math.min(Math.max(nx,PAD),W2-b.w-PAD); ny=Math.min(Math.max(ny,tB),H2-b.h-PAD);
+          }
+          b.x=nx; b.y=ny;
+        }
       }
     });
   },{passive:true});
