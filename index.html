@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
 <title>Mr. Brown — Course Websites</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2338127d'/%3E%3Ctext x='32' y='45' font-size='30' font-family='Georgia,serif' font-style='italic' font-weight='bold' fill='white' text-anchor='middle'%3Emb%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -144,7 +145,7 @@ body.static .card.spe{pointer-events:none}
         // blend the escape toward the viewport centre so it finds open space
         var tx=innerWidth/2-b.x-b.w/2, ty=innerHeight/2-b.y-b.h/2, tl=Math.hypot(tx,ty)||1;
         var ex=dx/d+tx/tl*.45, ey=dy/d+ty/tl*.45, elen=Math.hypot(ex,ey)||1;
-        var v=b.spe?1100:850;
+        var v=b.spe?2200:850;
         b.vx=ex/elen*v; b.vy=ey/elen*v;
       }
     });
@@ -179,6 +180,7 @@ body.static .card.spe{pointer-events:none}
         if(d<RR){
           if(Math.hypot(dx,dy)<8){var ra=Math.random()*Math.PI*2;dx=Math.cos(ra)*20;dy=Math.sin(ra)*20}
           var k=Math.max(d,18), s=FLEE*Math.pow(1-Math.max(d,0)/RR,2);
+          if(b.spe)s*=2;
           b.vx+=dx/k*s*dt; b.vy+=dy/k*s*dt; fled=true;
           if(b.spe){b.vx+=tcx/td*s*.3*dt; b.vy+=tcy/td*s*.3*dt} // arc around walls
         }
@@ -186,9 +188,16 @@ body.static .card.spe{pointer-events:none}
       if(el>SETTLE){ // everyone keeps gliding on a slowly wandering heading
         if(b.ang===undefined)b.ang=Math.random()*6.283;
         b.ang+=(Math.random()-.5)*1.6*dt;
-        var wf=b.spe?70:6.5;
+        var wf=b.spe?70:13;
         b.vx+=Math.cos(b.ang)*wf*dt; b.vy+=Math.sin(b.ang)*wf*dt;
-        if(b.spe){b.vx+=tcx/td*14*dt; b.vy+=tcy/td*14*dt} // don't sulk in corners
+        if(b.spe){b.vx+=tcx/td*20*dt; b.vy+=tcy/td*20*dt} // don't sulk in corners
+      }
+      if(b.spe&&el>SETTLE){ // wall aversion, ramps way up while being chased
+        var WM=150, wr=fled?2400:200;
+        b.vx+=wr*Math.max(0,1-(b.x-PAD)/WM)*dt;
+        b.vx-=wr*Math.max(0,1-(W-b.w-PAD-b.x)/WM)*dt;
+        b.vy+=wr*Math.max(0,1-(b.y-topB)/WM)*dt;
+        b.vy-=wr*Math.max(0,1-(H-b.h-PAD-b.y)/WM)*dt;
       }
 
       // post-settle: light drag so the glide survives; SPE calms fast after a flee
@@ -196,18 +205,29 @@ body.static .card.spe{pointer-events:none}
       var f=Math.exp(-dg*dt); b.vx*=f; b.vy*=f;
 
       var sp=Math.hypot(b.vx,b.vy), cap;
-      if(dodging&&mouse.on) cap=b.spe?1100:VFLEE;
+      if(dodging&&mouse.on) cap=b.spe?2200:VFLEE;
       else if(el<SETTLE) cap=460;
-      else cap=b.spe?110:Math.max(16,sp*.96); // knocked cards glide, then calm
+      else cap=b.spe?110:Math.max(30,sp*.96); // knocked cards glide, then calm
       if(sp>cap){b.vx*=cap/sp;b.vy*=cap/sp}
 
       b.x+=b.vx*dt; b.y+=b.vy*dt;
-      var hit=false;
-      if(b.x<PAD){b.x=PAD;b.vx=Math.abs(b.vx)*.85;hit=true}
-      if(b.x>W-b.w-PAD){b.x=W-b.w-PAD;b.vx=-Math.abs(b.vx)*.85;hit=true}
-      if(b.y<topB){b.y=topB;b.vy=Math.abs(b.vy)*.85;hit=true}
-      if(b.y>H-b.h-PAD){b.y=H-b.h-PAD;b.vy=-Math.abs(b.vy)*.85;hit=true}
-      if(hit)b.ang=Math.atan2(b.vy,b.vx); // glide heading follows the bounce
+      var hL=b.x<PAD, hR=b.x>W-b.w-PAD, hT=b.y<topB, hB=b.y>H-b.h-PAD;
+      if(hL)b.x=PAD; if(hR)b.x=W-b.w-PAD; if(hT)b.y=topB; if(hB)b.y=H-b.h-PAD;
+      if(hL||hR||hT||hB){
+        var sp2=Math.hypot(b.vx,b.vy);
+        if(b.spe&&fled&&mouse.on&&(hL||hR)&&(hT||hB)){ // chased into a corner: burst for the middle
+          b.vx=tcx/td*sp2; b.vy=tcy/td*sp2;
+        }else if(b.spe&&fled&&mouse.on){ // chased into a wall: slide along it, away from the cursor
+          if(hL||hR){b.vx=(hL?1:-1)*sp2*.25; b.vy=(b.y+b.h/2>mouse.y?1:-1)*sp2}
+          else{b.vy=(hT?1:-1)*sp2*.25; b.vx=(b.x+b.w/2>mouse.x?1:-1)*sp2}
+        }else{
+          if(hL)b.vx=Math.abs(b.vx)*.85;
+          if(hR)b.vx=-Math.abs(b.vx)*.85;
+          if(hT)b.vy=Math.abs(b.vy)*.85;
+          if(hB)b.vy=-Math.abs(b.vy)*.85;
+        }
+        b.ang=Math.atan2(b.vy,b.vx); // glide heading follows the bounce
+      }
     });
 
     // keep cards from stacking
